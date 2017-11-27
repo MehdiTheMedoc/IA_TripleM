@@ -20,6 +20,6 @@ def SeparateSong(LineNumber):
 
 	f.close()
 
-	return
+	return tabFloat 
 
 
