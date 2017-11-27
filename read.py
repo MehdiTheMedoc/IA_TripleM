@@ -4,9 +4,6 @@ def SeparateSong(LineNumber):
 
 	f = open("YearPredictionMSD.txt","r")
 
-
-
-	SeparateSong(5000)
 	line = f.readline()
 
 	for i in range (0,LineNumber):
