@@ -1,4 +1,8 @@
+import numpy
+
+
 def arrayProduct(a,b):
+
     if len(a) != len(b):
         print "Warning : Returning None in arrayProduct() %d!=%d" % (len(a),len(b))
         return None
@@ -9,7 +13,13 @@ def arrayProduct(a,b):
         res += tmp[i]
 
     return res
-        
+
+	
+def arrayProductNP(a,b):
+    aa = numpy.array(a)
+    bb = numpy.array(b)
+    return numpy.multiply(aa,bb)
+
 
 if __name__ == '__main__':
 	a = [1,2,3,4,5]

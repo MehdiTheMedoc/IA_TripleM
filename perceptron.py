@@ -13,13 +13,19 @@ def compute_unicouche(weights, music):
 		res += weights[i] * music[i+1]
 	return res
 
-def fitness(weights, musicList, function):
+def fitnessMean(weights, musicList, function):
 	summ = 0
 	for i in range(len(musicList)):
 		summ += abs(musicList[i][0] - function(weights, musicList[i]))
 	return summ/len(musicList)
+
+def fitnessMax(weights, musicList, function):
+	val = 0
+	for i in range(len(musicList)):
+		val = max(abs(musicList[i][0] - function(weights, musicList[i])), val)
+	return val
 	
-def trainRandom(weights, musicList, fonction, precision):
+def trainRandom(weights, musicList, fonction, fitness, precision):
 	fit = fitness(weights, musicList, fonction)
 	for i in range(len(weights)):
 		tempw = weights[i]
@@ -38,40 +44,41 @@ def trainRandom(weights, musicList, fonction, precision):
 	return weights
 
 
-def trainPlusMinus(weights, musicList, fonction, precision):
+def trainPlusMinus(weights, musicList, fonction, fitness, precision):
 	fit = fitness(weights, musicList, fonction)
 	for i in range(len(weights)):
 		tempw = weights[i]
 		delta = precision
 
 		weights[i] += delta
-		f = fitness(weights, musicList, fonction)
-		if(f>fit):
+		tempf = fitness(weights, musicList, fonction)
+		if(tempf>fit):
 			weights[i] -= 2*delta
-			f = fitness(weights, musicList, fonction)
-			if(f>fit):
+			tempf = fitness(weights, musicList, fonction)
+			if(tempf>fit):
+				tempf = fit
 				weights[i] = tempw
-		
-		fit = fitness(weights, musicList, fonction)
-		
+		fit = tempf
 	return weights
 
 
 w = randomWeights(90)
+trainIterations = 50
 
 il = []
-for i in range (100):
+for i in range (5):
 	il.append(read.SeparateSong(i))
 
 #print(len(read.SeparateSong(0)))
 
 
 
-print(str(fitness(w, il, compute_unicouche)))
-for i in range (50):
-	trainRandom(w,il,compute_unicouche, 1.0/(i+1.0))
-print(str(fitness(w, il, compute_unicouche)))
-print(str(compute_unicouche(w, il[0])))
-print(str(compute_unicouche(w, il[1])))
-print(str(compute_unicouche(w, il[2])))
-print(str(compute_unicouche(w, read.SeparateSong(39))))
+print(str(fitnessMax(w, il, compute_unicouche)))
+for i in range (trainIterations):
+	print(str(fitnessMax(w, il, compute_unicouche)))
+	if(i%2 == 0):
+		trainPlusMinus(w,il,compute_unicouche, fitnessMax, 1.0/(i+1.0))
+	else:
+		trainRandom(w,il,compute_unicouche, fitnessMax, 1.0/(i+1.0))
+	print("training : " + str((float(i)/float(trainIterations))*100)+"%")
+print(str(fitnessMax(w, il, compute_unicouche)))
